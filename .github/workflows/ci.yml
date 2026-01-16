@@ -1,4 +1,4 @@
-name : CI
+name: CI
 
 on:
     push:
@@ -23,3 +23,6 @@ jobs:
 
       - name: Syntax check
         run: python -m compileall .
+
+      - name: Import Check (no server run)
+        run: python -c "import main; from fastapi import FastAPI; assert isinstance(main.app, FastAPI)"
