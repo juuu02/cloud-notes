@@ -20,9 +20,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      
+      - name: Ruff lint
+        run: ruff check .
+      
+      - name: Ruff format check
+        run: ruff format --check
 
       - name: Syntax check
         run: python -m compileall .
 
       - name: Import Check (no server run)
         run: python -c "import main; from fastapi import FastAPI; assert isinstance(main.app, FastAPI)"
+
+      
