@@ -38,7 +38,7 @@ jobs:
 
       - name: Docker run + health check
         run: |
-          docker run -d --rm --name cloud-notes-ci -p 8000:8000 cloud-notes:${{ github.sha }}
+          docker run -d --rm --name cloud-notes-ci -p 8000:8000 cloud-notes:${{ github.sha }} .
           sleep 2
           curl -f http://localhost:8000/health
           docker stop cloud-notes-ci
