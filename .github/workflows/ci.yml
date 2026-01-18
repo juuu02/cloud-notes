@@ -2,7 +2,7 @@ name: CI
 
 on:
     push:
-        branches: ["main"]
+        branches: ["main","develop"]
     pull_request:
         branches: ["main"]
 
@@ -25,10 +25,13 @@ jobs:
         run: ruff check .
       
       - name: Ruff format check
-        run: ruff format --check
+        run: ruff format --check .
 
       - name: Syntax check
         run: python -m compileall .
+
+      - name: Run test
+        run: pytest -q
 
       - name: Import Check (no server run)
         run: python -c "import main; from fastapi import FastAPI; assert isinstance(main.app, FastAPI)"
@@ -39,7 +42,7 @@ jobs:
       - name: Docker run + health check
         run: |
           docker run -d --rm --name cloud-notes-ci -p 8000:8000 cloud-notes:${{ github.sha }}
-          sleep 2
+          sleep 5
           curl -f http://localhost:8000/health
           docker stop cloud-notes-ci
         
