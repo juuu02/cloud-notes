@@ -32,5 +32,15 @@ jobs:
 
       - name: Import Check (no server run)
         run: python -c "import main; from fastapi import FastAPI; assert isinstance(main.app, FastAPI)"
-
       
+      - name: Docker Build (smoke)
+        run: docker build -t cloud-notes:${{ github.sha }}  # -t = tag
+
+      - name: Docker run + health check
+        run: |
+          docker run -d --rm --name cloud-notes-ci -p 8000:8000 cloud-notes:${{ github.sha }}
+          sleep 2
+          curl -f http://localhost:8000/health
+          docker stop cloud-notes-ci
+        
+        # -d = background 실행, --rm : 컨테이너 종료 시 삭제, --name cloud-notes-ci = 컨테이너 이름 지정, -p 포트 포워딩
