@@ -45,7 +45,8 @@ jobs:
 
       - name: Docker run + health check
         run: |
-          docker run -d --rm --name cloud-notes-ci -p 8000:8000 -e DATABASE_URL=dummy cloud-notes:${{ github.sha }}          sleep 5
+          docker run -d --rm --name cloud-notes-ci -p 8000:8000 -e DATABASE_URL=dummy cloud-notes:${{ github.sha }}
+          sleep 5
           curl -f http://localhost:8000/health
           curl -f http://localhost:8000/ready
           docker stop cloud-notes-ci
