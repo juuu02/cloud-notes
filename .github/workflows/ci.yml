@@ -6,6 +6,10 @@ on:
     pull_request:
         branches: ["main"]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,9 +45,13 @@ jobs:
 
       - name: Docker run + health check
         run: |
-          docker run -d --rm --name cloud-notes-ci -p 8000:8000 cloud-notes:${{ github.sha }}
-          sleep 5
+          docker run -d --rm --name cloud-notes-ci -p 8000:8000 -e DATABASE_URL=dummy cloud-notes:${{ github.sha }}          sleep 5
           curl -f http://localhost:8000/health
+          curl -f http://localhost:8000/ready
           docker stop cloud-notes-ci
         
         # -d = background 실행, --rm : 컨테이너 종료 시 삭제, --name cloud-notes-ci = 컨테이너 이름 지정, -p 포트 포워딩
+
+      - name: Login to GHCR
+        if: github.ref == 'refs/heads/main'
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
